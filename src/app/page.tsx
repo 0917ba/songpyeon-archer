@@ -10,6 +10,7 @@ import {
   MouseConstraint,
   Body,
   Events,
+  Constraint,
 } from 'matter-js';
 import { useEffect, useRef } from 'react';
 
@@ -48,7 +49,7 @@ export default function Page() {
 
     const stone = Bodies.circle(190, 465, 20, {
       label: 'stone',
-      isStatic: true,
+      // isStatic: true,
       render: {
         sprite: {
           texture: '/images/stone.png',
@@ -84,10 +85,62 @@ export default function Page() {
       World.remove(engine.world, stone);
     }
 
-    Events.on(mouseConstraint, 'mousedown', (event) => {
-      const clickedObjcet = event.source.body;
-      if (clickedObjcet?.label === 'stone') {
-        shootStone();
+    stone.isStatic = true;
+    let constraint: Constraint;
+    let isDragging = false;
+
+    Events.on(mouseConstraint, 'startdrag', (event) => {
+      const clickedObject: Body = event.body;
+      if (clickedObject?.label === 'stone') {
+        clickedObject.isStatic = false;
+        isDragging = true;
+
+        const initialPoint = { x: 190, y: 465 };
+        constraint = Constraint.create({
+          pointA: initialPoint,
+          bodyB: clickedObject,
+          stiffness: 0.05,
+        });
+
+        World.add(engine.world, constraint);
+      }
+    });
+
+    Events.on(mouseConstraint, 'enddrag', (event) => {
+      const clickedObject = event.body;
+      if (clickedObject?.label === 'stone') {
+        // 클릭한 오브젝트가 발사할 오브젝트인 경우에만 실행됩니다.
+        isDragging = false;
+        stone.isStatic = false;
+        // 발사할 오브젝트의 속도를 설정합니다.
+        const speed = 15;
+        // 360분법으로 각도를 설정합니다.
+        const angle = 45;
+        // 라디안 및 각도 변환
+        const convertedAngle = (360 - angle) * (Math.PI / 180);
+
+        const x = speed * Math.cos(convertedAngle);
+        const y = speed * Math.sin(convertedAngle);
+
+        // 발사할 오브젝트의 속도를 설정합니다.
+        Body.setVelocity(clickedObject, { x, y });
+        World.remove(engine.world, constraint);
+      }
+    });
+
+    Events.on(mouseConstraint, 'mousemove', (event) => {
+      if (isDragging) {
+        const dx = event.source.mouse.position.x - 190;
+        const dy = event.source.mouse.position.y - 465;
+        const movementLength = Math.sqrt(dx * dx + dy * dy);
+        console.log(movementLength);
+
+        const maxMovementLength = 280;
+        if (movementLength > maxMovementLength) {
+          stone.isStatic = true;
+        } else {
+          stone.isStatic = false;
+        }
       }
     });
 

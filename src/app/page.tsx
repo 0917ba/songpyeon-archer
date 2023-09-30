@@ -84,7 +84,12 @@ export default function Page() {
       World.remove(engine.world, stone);
     }
 
-    Events.on(mouseConstraint, 'mousedown', shootStone);
+    Events.on(mouseConstraint, 'mousedown', (event) => {
+      const clickedObjcet = event.source.body;
+      if (clickedObjcet?.label === 'stone') {
+        shootStone();
+      }
+    });
 
     World.add(engine.world, [floor, stone]);
     const runner = Runner.run(engine);

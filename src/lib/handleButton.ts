@@ -11,7 +11,7 @@ let start: Start;
 let restart: Restart;
 let home: Home;
 
-export function init(
+export function initButton(
   mouseConstraint: MouseConstraint,
   router: AppRouterInstance
 ) {

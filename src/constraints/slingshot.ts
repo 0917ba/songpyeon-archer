@@ -1,0 +1,19 @@
+const BAND_STROKE = 10;
+const BAND_COLOR = '#301608';
+const BAND_RADIUS = 7;
+
+const SLING_POINT_LEFT = { x: 170, y: 465 };
+const SLING_POINT_RIGHT = { x: 200, y: 460 };
+const SLING_POINT_CENTER = { x: 190, y: 465 };
+
+const MAX_STRETCH = 280;
+
+export {
+  BAND_STROKE,
+  BAND_COLOR,
+  BAND_RADIUS,
+  SLING_POINT_LEFT,
+  SLING_POINT_RIGHT,
+  SLING_POINT_CENTER,
+  MAX_STRETCH,
+};

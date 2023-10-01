@@ -13,6 +13,15 @@ import {
   Constraint,
   Vector,
 } from 'matter-js';
+import {
+  BAND_STROKE,
+  BAND_COLOR,
+  BAND_RADIUS,
+  SLING_POINT_LEFT,
+  SLING_POINT_RIGHT,
+  SLING_POINT_CENTER,
+  MAX_STRETCH,
+} from '@/constraints/slingshot';
 import { useEffect, useRef } from 'react';
 
 export default function Page() {
@@ -67,19 +76,23 @@ export default function Page() {
       },
     });
 
+    const block = Bodies.rectangle(500, 500, 80, 80, {
+      label: 'block',
+      render: {
+        sprite: {
+          texture: '/images/block.png',
+          xScale: 1,
+          yScale: 1,
+        },
+      },
+    });
+
     stone.isStatic = true;
     let constraint: Constraint;
     let isDragging = false;
 
-    const slingPointLeft = { x: 170, y: 465 };
-    const slingPointRight = { x: 200, y: 460 };
-
     let bandLeft: Body;
     let bandRight: Body;
-
-    const bandStroke = 10;
-    const bandColor = '#301608';
-    const bandRadius = 7;
 
     Events.on(mouseConstraint, 'mousemove', (event) => {
       if (isDragging) {
@@ -87,7 +100,7 @@ export default function Page() {
           World.remove(engine.world, bandLeft);
         }
 
-        const startPoint = slingPointLeft;
+        const startPoint = SLING_POINT_LEFT;
         const endPoint = stone.position;
 
         const x = (startPoint.x + endPoint.x) / 2;
@@ -101,17 +114,17 @@ export default function Page() {
           endPoint.x - startPoint.x
         );
 
-        bandLeft = Bodies.rectangle(x, y, width, bandStroke, {
+        bandLeft = Bodies.rectangle(x, y, width, BAND_STROKE, {
           angle: angle,
           isStatic: true,
           collisionFilter: {
             group: -1,
           },
           render: {
-            fillStyle: bandColor,
+            fillStyle: BAND_COLOR,
           },
           chamfer: {
-            radius: bandRadius,
+            radius: BAND_RADIUS,
           },
         });
 
@@ -125,7 +138,7 @@ export default function Page() {
           World.remove(engine.world, bandRight);
         }
 
-        const startPoint = slingPointRight;
+        const startPoint = SLING_POINT_RIGHT;
         const endPoint = stone.position;
 
         const x = (startPoint.x + endPoint.x) / 2;
@@ -139,17 +152,17 @@ export default function Page() {
           endPoint.x - startPoint.x
         );
 
-        bandRight = Bodies.rectangle(x, y, width, bandStroke, {
+        bandRight = Bodies.rectangle(x, y, width, BAND_STROKE, {
           angle: angle,
           isStatic: true,
           collisionFilter: {
             group: -1,
           },
           render: {
-            fillStyle: bandColor,
+            fillStyle: BAND_COLOR,
           },
           chamfer: {
-            radius: bandRadius,
+            radius: BAND_RADIUS,
           },
         });
 
@@ -170,8 +183,6 @@ export default function Page() {
           stiffness: 0.05,
           render: {
             visible: false,
-            lineWidth: 5,
-            strokeStyle: '#dfdfdf',
           },
         });
 
@@ -189,7 +200,7 @@ export default function Page() {
         World.remove(engine.world, bandRight);
 
         // // 발사할 오브젝트의 속도를 설정합니다.
-        const startPoint = { x: 190, y: 465 };
+        const startPoint = SLING_POINT_CENTER;
         const endPoint: { x: number; y: number } = event.mouse.position;
         const dragRatio = 0.18;
         const velocity = Vector.mult(
@@ -208,7 +219,7 @@ export default function Page() {
         const dy = event.source.mouse.position.y - 465;
         const movementLength = Math.sqrt(dx * dx + dy * dy);
 
-        const maxMovementLength = 280;
+        const maxMovementLength = MAX_STRETCH;
         if (movementLength > maxMovementLength) {
           stone.isStatic = true;
         } else {
@@ -217,7 +228,7 @@ export default function Page() {
       }
     });
 
-    World.add(engine.world, [floor, stone]);
+    World.add(engine.world, [floor, stone, block]);
     const runner = Runner.run(engine);
     Render.run(render);
 

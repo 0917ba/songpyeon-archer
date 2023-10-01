@@ -31,9 +31,12 @@ import engine from '@/lib/engine';
 import { BUTTON_RADIUS } from '@/constants/canvas';
 import Pause from '@/objects/buttons/Pause';
 import { init } from '@/lib/handleButton';
+import { useRouter } from 'next/navigation';
 
 export default function Page({ params }: { params: { id: string } }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     const render = Render.create({
@@ -212,13 +215,13 @@ export default function Page({ params }: { params: { id: string } }) {
     World.add(engine.world, [floor, stone, block]);
     const runner = Runner.run(engine);
     Render.run(render);
-    init(mouseConstraint, runner);
+    init(mouseConstraint, router);
 
     return () => {
       Runner.stop(runner);
       Render.stop(render);
     };
-  }, []);
+  }, [router]);
 
   return <canvas ref={canvasRef} />;
 }

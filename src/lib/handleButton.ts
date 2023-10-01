@@ -4,17 +4,21 @@ import Restart from '@/objects/buttons/Restart';
 import Start from '@/objects/buttons/Start';
 import { Events, MouseConstraint, Runner, World } from 'matter-js';
 import engine from './engine';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 let pause: Pause;
 let start: Start;
 let restart: Restart;
 let home: Home;
 
-export function init(mouseConstraint: MouseConstraint, runner: Runner) {
+export function init(
+  mouseConstraint: MouseConstraint,
+  router: AppRouterInstance
+) {
   pause = new Pause();
   start = new Start();
   restart = new Restart();
-  home = new Home();
+  home = new Home(router);
 
   World.add(engine.world, pause.body);
 
@@ -32,7 +36,6 @@ export function init(mouseConstraint: MouseConstraint, runner: Runner) {
     }
     // home의 경우 초기화를 안 시켜줘도 된다.
     else if (label === 'home') {
-      setUnpaused();
       home.onClick();
     }
   });

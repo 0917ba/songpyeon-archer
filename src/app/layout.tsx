@@ -1,3 +1,4 @@
+import Wrapper from '@/components/Wrapper';
 import './globals.css';
 
 export default function RootLayout({
@@ -9,7 +10,7 @@ export default function RootLayout({
     <html lang="ko" className="w-full h-full">
       <body className="w-full h-full">
         <div className="flex justify-center items-center h-full">
-          {children}
+          <Wrapper>{children}</Wrapper>
         </div>
       </body>
     </html>

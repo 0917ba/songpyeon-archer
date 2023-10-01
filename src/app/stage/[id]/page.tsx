@@ -27,13 +27,15 @@ import Floor from '@/objects/Floor';
 import Stone from '@/objects/Stone';
 import Block from '@/objects/Block';
 import Target from '@/objects/Target';
+import engine from '@/lib/engine';
 import { BUTTON_RADIUS } from '@/constants/canvas';
+import Pause from '@/objects/buttons/Pause';
+import { init } from '@/lib/handleButton';
 
 export default function Page({ params }: { params: { id: string } }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const engine = Engine.create();
     const render = Render.create({
       engine,
       canvas: canvasRef.current!,
@@ -72,20 +74,6 @@ export default function Page({ params }: { params: { id: string } }) {
 
     let bandLeft: Body;
     let bandRight: Body;
-
-    const pause = Bodies.circle(50, 50, BUTTON_RADIUS, {
-      isSensor: true,
-      isStatic: true,
-      render: {
-        sprite: {
-          texture: '/images/pause.png',
-          xScale: 1,
-          yScale: 1,
-        },
-      },
-    });
-
-    World.add(engine.world, pause);
 
     Events.on(mouseConstraint, 'mousemove', (event) => {
       if (isDragging) {
@@ -224,12 +212,13 @@ export default function Page({ params }: { params: { id: string } }) {
     World.add(engine.world, [floor, stone, block]);
     const runner = Runner.run(engine);
     Render.run(render);
+    init(mouseConstraint, runner);
 
     return () => {
       Runner.stop(runner);
       Render.stop(render);
     };
-  }, [params.id]);
+  }, []);
 
   return <canvas ref={canvasRef} />;
 }

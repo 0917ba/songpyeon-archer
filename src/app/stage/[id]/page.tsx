@@ -28,7 +28,7 @@ import Stone from '@/objects/Stone';
 import Block from '@/objects/Block';
 import Target from '@/objects/Target';
 
-export default function Page() {
+export default function Page({ params }: { params: { id: string } }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -214,7 +214,7 @@ export default function Page() {
       Runner.stop(runner);
       Render.stop(render);
     };
-  }, []);
+  }, [params.id]);
 
   return <canvas ref={canvasRef} />;
 }

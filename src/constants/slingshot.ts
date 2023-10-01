@@ -6,6 +6,9 @@ const SLING_POINT_LEFT = { x: 170, y: 465 };
 const SLING_POINT_RIGHT = { x: 200, y: 460 };
 const SLING_POINT_CENTER = { x: 190, y: 465 };
 
+const STONE_WIDTH = 40;
+const STONE_HEIGHT = 30.11;
+
 const MAX_STRETCH = 280;
 
 export {
@@ -16,4 +19,6 @@ export {
   SLING_POINT_RIGHT,
   SLING_POINT_CENTER,
   MAX_STRETCH,
+  STONE_WIDTH,
+  STONE_HEIGHT,
 };

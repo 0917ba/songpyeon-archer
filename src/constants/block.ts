@@ -1,0 +1,4 @@
+const BLOCK_WIDTH = 80;
+const BLOCK_HEIGHT = 80;
+
+export { BLOCK_WIDTH, BLOCK_HEIGHT };

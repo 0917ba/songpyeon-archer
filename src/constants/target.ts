@@ -1,0 +1,4 @@
+const TARGET_WIDTH = 55;
+const TARGET_HEIGHT = 36;
+
+export { TARGET_WIDTH, TARGET_HEIGHT };

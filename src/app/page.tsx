@@ -11,6 +11,7 @@ import {
   Body,
   Events,
   Constraint,
+  Vector,
 } from 'matter-js';
 import { useEffect, useRef } from 'react';
 
@@ -34,6 +35,11 @@ export default function Page() {
     const mouse = Mouse.create(render.canvas);
     const mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,
+      constraint: {
+        render: {
+          visible: false,
+        },
+      },
     });
     World.add(engine.world, mouseConstraint);
 
@@ -49,6 +55,7 @@ export default function Page() {
 
     const stone = Bodies.circle(190, 465, 20, {
       label: 'stone',
+      frictionAir: 0.005,
       // isStatic: true,
       render: {
         sprite: {
@@ -58,32 +65,6 @@ export default function Page() {
         },
       },
     });
-
-    function shootStone() {
-      const speed = 15;
-      // 360분법으로 각도를 설정합니다.
-      const angle = 45;
-      // 라디안 및 각도 변환
-      const convertedAngle = (360 - angle) * (Math.PI / 180);
-
-      const x = speed * Math.cos(convertedAngle);
-      const y = speed * Math.sin(convertedAngle);
-
-      const clone = Bodies.circle(190, 465, 20, {
-        label: 'clone',
-        render: {
-          sprite: {
-            texture: '/images/stone.png',
-            xScale: 1,
-            yScale: 1,
-          },
-        },
-      });
-
-      Body.setVelocity(clone, { x, y });
-      World.add(engine.world, clone);
-      World.remove(engine.world, stone);
-    }
 
     stone.isStatic = true;
     let constraint: Constraint;
@@ -100,6 +81,9 @@ export default function Page() {
           pointA: initialPoint,
           bodyB: clickedObject,
           stiffness: 0.05,
+          render: {
+            visible: false,
+          },
         });
 
         World.add(engine.world, constraint);
@@ -112,18 +96,17 @@ export default function Page() {
         // 클릭한 오브젝트가 발사할 오브젝트인 경우에만 실행됩니다.
         isDragging = false;
         stone.isStatic = false;
-        // 발사할 오브젝트의 속도를 설정합니다.
-        const speed = 15;
-        // 360분법으로 각도를 설정합니다.
-        const angle = 45;
-        // 라디안 및 각도 변환
-        const convertedAngle = (360 - angle) * (Math.PI / 180);
 
-        const x = speed * Math.cos(convertedAngle);
-        const y = speed * Math.sin(convertedAngle);
+        // // 발사할 오브젝트의 속도를 설정합니다.
+        const startPoint = { x: 190, y: 465 };
+        const endPoint: { x: number; y: number } = event.mouse.position;
+        const dragRatio = 0.145;
+        const velocity = Vector.mult(
+          Vector.sub(startPoint, endPoint),
+          dragRatio
+        );
 
-        // 발사할 오브젝트의 속도를 설정합니다.
-        Body.setVelocity(clickedObject, { x, y });
+        Body.setVelocity(clickedObject, velocity);
         World.remove(engine.world, constraint);
       }
     });
@@ -133,7 +116,6 @@ export default function Page() {
         const dx = event.source.mouse.position.x - 190;
         const dy = event.source.mouse.position.y - 465;
         const movementLength = Math.sqrt(dx * dx + dy * dy);
-        console.log(movementLength);
 
         const maxMovementLength = 280;
         if (movementLength > maxMovementLength) {

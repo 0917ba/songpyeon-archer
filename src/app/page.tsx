@@ -45,9 +45,6 @@ export default function Page() {
 
     const floor = Bodies.rectangle(0, 600, 2160, 40, {
       isStatic: true, // 다른 사물이 통과하지 못함
-      collisionFilter: {
-        group: -1, // 특정 그룹에 대해서만 다른 효과를 내기 위해 그룹 묶기
-      },
       render: {
         visible: false,
       },
@@ -55,8 +52,12 @@ export default function Page() {
 
     const stone = Bodies.circle(190, 465, 20, {
       label: 'stone',
-      frictionAir: 0.005,
+      frictionAir: 0.001,
       // isStatic: true,
+      collisionFilter: {
+        group: -1,
+      },
+
       render: {
         sprite: {
           texture: '/images/stone.png',
@@ -69,6 +70,92 @@ export default function Page() {
     stone.isStatic = true;
     let constraint: Constraint;
     let isDragging = false;
+
+    const slingPointLeft = { x: 170, y: 465 };
+    const slingPointRight = { x: 200, y: 460 };
+
+    let bandLeft: Body;
+    let bandRight: Body;
+
+    const bandStroke = 10;
+    const bandColor = '#301608';
+    const bandRadius = 7;
+
+    Events.on(mouseConstraint, 'mousemove', (event) => {
+      if (isDragging) {
+        if (bandLeft) {
+          World.remove(engine.world, bandLeft);
+        }
+
+        const startPoint = slingPointLeft;
+        const endPoint = stone.position;
+
+        const x = (startPoint.x + endPoint.x) / 2;
+        const y = (startPoint.y + endPoint.y) / 2;
+        const width = Math.sqrt(
+          Math.pow(startPoint.x - endPoint.x, 2) +
+            Math.pow(startPoint.y - endPoint.y, 2)
+        );
+        const angle = Math.atan2(
+          endPoint.y - startPoint.y,
+          endPoint.x - startPoint.x
+        );
+
+        bandLeft = Bodies.rectangle(x, y, width, bandStroke, {
+          angle: angle,
+          isStatic: true,
+          collisionFilter: {
+            group: -1,
+          },
+          render: {
+            fillStyle: bandColor,
+          },
+          chamfer: {
+            radius: bandRadius,
+          },
+        });
+
+        World.add(engine.world, bandLeft);
+      }
+    });
+
+    Events.on(mouseConstraint, 'mousemove', (event) => {
+      if (isDragging) {
+        if (bandRight) {
+          World.remove(engine.world, bandRight);
+        }
+
+        const startPoint = slingPointRight;
+        const endPoint = stone.position;
+
+        const x = (startPoint.x + endPoint.x) / 2;
+        const y = (startPoint.y + endPoint.y) / 2;
+        const width = Math.sqrt(
+          Math.pow(startPoint.x - endPoint.x, 2) +
+            Math.pow(startPoint.y - endPoint.y, 2)
+        );
+        const angle = Math.atan2(
+          endPoint.y - startPoint.y,
+          endPoint.x - startPoint.x
+        );
+
+        bandRight = Bodies.rectangle(x, y, width, bandStroke, {
+          angle: angle,
+          isStatic: true,
+          collisionFilter: {
+            group: -1,
+          },
+          render: {
+            fillStyle: bandColor,
+          },
+          chamfer: {
+            radius: bandRadius,
+          },
+        });
+
+        World.add(engine.world, bandRight);
+      }
+    });
 
     Events.on(mouseConstraint, 'startdrag', (event) => {
       const clickedObject: Body = event.body;
@@ -83,6 +170,8 @@ export default function Page() {
           stiffness: 0.05,
           render: {
             visible: false,
+            lineWidth: 5,
+            strokeStyle: '#dfdfdf',
           },
         });
 
@@ -96,11 +185,13 @@ export default function Page() {
         // 클릭한 오브젝트가 발사할 오브젝트인 경우에만 실행됩니다.
         isDragging = false;
         stone.isStatic = false;
+        World.remove(engine.world, bandLeft);
+        World.remove(engine.world, bandRight);
 
         // // 발사할 오브젝트의 속도를 설정합니다.
         const startPoint = { x: 190, y: 465 };
         const endPoint: { x: number; y: number } = event.mouse.position;
-        const dragRatio = 0.145;
+        const dragRatio = 0.18;
         const velocity = Vector.mult(
           Vector.sub(startPoint, endPoint),
           dragRatio

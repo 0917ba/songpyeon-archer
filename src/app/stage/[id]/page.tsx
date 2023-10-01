@@ -11,6 +11,7 @@ import {
   Events,
   Constraint,
   Vector,
+  Engine,
 } from 'matter-js';
 import {
   BAND_STROKE,
@@ -36,19 +37,21 @@ export default function Page({ params }: { params: { id: string } }) {
   const router = useRouter();
 
   useEffect(() => {
-    const runner = Runner.run(engine);
-    const render = Render.create({
-      engine,
-      canvas: canvasRef.current!,
-      options: {
-        width: 1080,
-        height: 600,
-        background: '/images/layout.png',
-        wireframes: false,
-      },
-    });
+    let runner: Runner;
+    let render: Render;
 
     const init = () => {
+      runner = Runner.run(engine);
+      render = Render.create({
+        engine,
+        canvas: canvasRef.current!,
+        options: {
+          width: 1080,
+          height: 600,
+          background: '/images/layout.png',
+          wireframes: false,
+        },
+      });
       // 마우스 이벤트 추가
       const mouse = Mouse.create(render.canvas);
       const mouseConstraint = MouseConstraint.create(engine, {
@@ -185,14 +188,17 @@ export default function Page({ params }: { params: { id: string } }) {
       });
 
       Render.run(render);
-      initButton(mouseConstraint, router);
+      initButton(mouseConstraint, router, runner, render, init);
     };
 
     init();
 
     return () => {
-      Runner.stop(runner);
-      Render.stop(render);
+      World.clear(engine.world, false);
+      Engine.clear(engine);
+      Events.off(engine, undefined as any, undefined as any);
+      Runner?.stop(runner);
+      Render?.stop(render);
     };
   }, [router]);
 

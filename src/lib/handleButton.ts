@@ -2,7 +2,7 @@ import Home from '@/objects/buttons/Home';
 import Pause from '@/objects/buttons/Pause';
 import Restart from '@/objects/buttons/Restart';
 import Start from '@/objects/buttons/Start';
-import { Events, MouseConstraint, Runner, World } from 'matter-js';
+import { Events, MouseConstraint, Render, Runner, World } from 'matter-js';
 import engine from './engine';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
@@ -13,11 +13,14 @@ let home: Home;
 
 export function initButton(
   mouseConstraint: MouseConstraint,
-  router: AppRouterInstance
+  router: AppRouterInstance,
+  runner: Runner,
+  render: Render,
+  initCanvas: () => void
 ) {
   pause = new Pause();
   start = new Start();
-  restart = new Restart();
+  restart = new Restart(render, runner, initCanvas);
   home = new Home(router);
 
   World.add(engine.world, pause.body);

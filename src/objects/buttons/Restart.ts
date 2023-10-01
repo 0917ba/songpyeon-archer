@@ -1,3 +1,4 @@
+import { Engine, Events, Render, Runner, World } from 'matter-js';
 import Button from './Button';
 import { BUTTON_X, BUTTON_Y } from '@/constants/button';
 import engine from '@/lib/engine';
@@ -5,8 +6,15 @@ import engine from '@/lib/engine';
 export default class Restart extends Button {
   onClick: () => void;
 
-  constructor() {
+  constructor(render: Render, runner: Runner, init: () => void) {
     super(BUTTON_X[1], BUTTON_Y, '/images/restart.png', 'restart');
-    this.onClick = () => {};
+    this.onClick = () => {
+      World.clear(engine.world, false);
+      Engine.clear(engine);
+      Events.off(engine, undefined as any, undefined as any);
+      Render.stop(render);
+      Runner.stop(runner);
+      init();
+    };
   }
 }

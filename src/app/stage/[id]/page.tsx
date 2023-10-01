@@ -27,6 +27,7 @@ import Floor from '@/objects/Floor';
 import Stone from '@/objects/Stone';
 import Block from '@/objects/Block';
 import Target from '@/objects/Target';
+import { BUTTON_RADIUS } from '@/constants/canvas';
 
 export default function Page({ params }: { params: { id: string } }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -61,7 +62,7 @@ export default function Page({ params }: { params: { id: string } }) {
     const stone = Stone();
 
     const block = Block(500, 500);
-    const target = Target(500, 400, 'green');
+    const target = Target(500, 400, 'pink');
 
     World.add(engine.world, [target]);
 
@@ -71,6 +72,20 @@ export default function Page({ params }: { params: { id: string } }) {
 
     let bandLeft: Body;
     let bandRight: Body;
+
+    const pause = Bodies.circle(50, 50, BUTTON_RADIUS, {
+      isSensor: true,
+      isStatic: true,
+      render: {
+        sprite: {
+          texture: '/images/pause.png',
+          xScale: 1,
+          yScale: 1,
+        },
+      },
+    });
+
+    World.add(engine.world, pause);
 
     Events.on(mouseConstraint, 'mousemove', (event) => {
       if (isDragging) {

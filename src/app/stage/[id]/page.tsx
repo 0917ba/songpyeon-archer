@@ -286,7 +286,7 @@ export default function Page({ params }: { params: { id: string } }) {
       </div>
       {!isLevelComplete &&
         (isPaused ? (
-          <div className="absolute top-[30px] left-[30px] flex gap-[12px]">
+          <div className="absolute top-[25px] left-[30px] flex gap-[12px]">
             <StartButton onClick={() => setIsPaused(false)} />
             <RestartButton onClick={restart} />
             <HomeButton />

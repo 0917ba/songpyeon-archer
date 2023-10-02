@@ -176,13 +176,13 @@ export default function Page({ params }: { params: { id: string } }) {
           Body.setVelocity(clickedObject, velocity);
           World.remove(engine.world, constraint);
 
-          // 3초 후 새로운 콩 생성
+          // 0.1초 후 새로운 콩 생성
           setTimeout(() => {
-            World.remove(engine.world, stone);
+            // World.remove(engine.world, stone);
             stone = Stone();
             World.add(engine.world, stone);
             stone.isStatic = true;
-          }, 3000);
+          }, 100);
         }
       });
 
@@ -203,7 +203,7 @@ export default function Page({ params }: { params: { id: string } }) {
       });
 
       Render.run(render);
-      initButton(mouseConstraint, router, runner, render, init);
+      initButton(mouseConstraint, router, runner, render, setScore, init);
     };
 
     init();

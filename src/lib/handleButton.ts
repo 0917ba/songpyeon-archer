@@ -16,11 +16,12 @@ export function initButton(
   router: AppRouterInstance,
   runner: Runner,
   render: Render,
+  setScore: (score: number) => void,
   initCanvas: () => void
 ) {
   pause = new Pause();
   start = new Start();
-  restart = new Restart(render, runner, initCanvas);
+  restart = new Restart(render, runner, initCanvas, setScore);
   home = new Home(router);
 
   World.add(engine.world, pause.body);

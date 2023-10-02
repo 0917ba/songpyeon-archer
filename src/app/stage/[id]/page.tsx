@@ -22,7 +22,7 @@ import {
   SLING_POINT_CENTER,
   MAX_STRETCH,
 } from '@/constants/slingshot';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Floor from '@/objects/Floor';
 import Stone from '@/objects/Stone';
 import Block from '@/objects/Block';
@@ -30,10 +30,14 @@ import Target from '@/objects/Target';
 import engine from '@/lib/engine';
 import { initButton } from '@/lib/handleButton';
 import { useRouter } from 'next/navigation';
+import { useRecoilState } from 'recoil';
+import { highScoreState } from '@/atoms/atom';
 
 export default function Page({ params }: { params: { id: string } }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const [HighScore, setHighScore] = useRecoilState(highScoreState);
+  const [score, setScore] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -65,7 +69,7 @@ export default function Page({ params }: { params: { id: string } }) {
       World.add(engine.world, mouseConstraint);
 
       const floor = Floor();
-      const stone = Stone();
+      let stone = Stone();
       stone.isStatic = true;
 
       const block = Block(500, 500);
@@ -157,6 +161,9 @@ export default function Page({ params }: { params: { id: string } }) {
           World.remove(engine.world, bandLeft);
           World.remove(engine.world, bandRight);
 
+          // 사용한 콩 개수 증가
+          setScore((prev) => prev + 1);
+
           // 돌멩이 속도 설정
           const startPoint = SLING_POINT_CENTER;
           const endPoint: { x: number; y: number } = event.mouse.position;
@@ -168,6 +175,14 @@ export default function Page({ params }: { params: { id: string } }) {
 
           Body.setVelocity(clickedObject, velocity);
           World.remove(engine.world, constraint);
+
+          // 3초 후 새로운 콩 생성
+          setTimeout(() => {
+            World.remove(engine.world, stone);
+            stone = Stone();
+            World.add(engine.world, stone);
+            stone.isStatic = true;
+          }, 3000);
         }
       });
 
@@ -207,7 +222,7 @@ export default function Page({ params }: { params: { id: string } }) {
     <div className="relative h-[600px] w-[1080px]">
       <div className="absolute top-6 right-6 w-48 h-12 rounded-md bg-slate-100/60 flex flex-col justify-center">
         <div className="text-center text-lg font-bold text-slate-800">
-          사용한 콩 개수: <span id="count">0</span>
+          사용한 콩 개수: <span id="count">{score}</span>
         </div>
       </div>
       <canvas ref={canvasRef} />

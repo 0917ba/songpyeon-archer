@@ -203,20 +203,25 @@ export default function Page({ params }: { params: { id: string } }) {
         }
       });
 
+      // 두 물체가 충돌하였을 때
       Events.on(engine, 'collisionStart', (event) => {
         event.pairs.some((pair) => {
           const { bodyA, bodyB } = pair;
+          // 충돌한 두 물체가 바닥 & 송편인지 확인
           const isTargetDied =
             (bodyA.label === 'target' && bodyB.label === 'floor') ||
             (bodyA.label === 'floor' && bodyB.label === 'target');
 
           if (isTargetDied) {
             setTargetLeftCount((prev) => prev - 1);
-            if (bodyA.label === 'target') {
-              World.remove(engine.world, bodyA);
-            } else {
-              World.remove(engine.world, bodyB);
-            }
+            // 0.1초 후 타겟 제거
+            setTimeout(() => {
+              if (bodyA.label === 'target') {
+                World.remove(engine.world, bodyA);
+              } else {
+                World.remove(engine.world, bodyB);
+              }
+            }, 100);
           }
         });
       });

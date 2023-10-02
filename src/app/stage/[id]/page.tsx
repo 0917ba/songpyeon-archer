@@ -38,6 +38,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   const [HighScore, setHighScore] = useRecoilState(highScoreState);
   const [score, setScore] = useState(0);
+  const [targetLeftCount, setTargetLeftCount] = useState(1);
   const router = useRouter();
 
   useEffect(() => {
@@ -202,6 +203,24 @@ export default function Page({ params }: { params: { id: string } }) {
         }
       });
 
+      Events.on(engine, 'collisionStart', (event) => {
+        event.pairs.some((pair) => {
+          const { bodyA, bodyB } = pair;
+          const isTargetDied =
+            (bodyA.label === 'target' && bodyB.label === 'floor') ||
+            (bodyA.label === 'floor' && bodyB.label === 'target');
+
+          if (isTargetDied) {
+            setTargetLeftCount((prev) => prev - 1);
+            if (bodyA.label === 'target') {
+              World.remove(engine.world, bodyA);
+            } else {
+              World.remove(engine.world, bodyB);
+            }
+          }
+        });
+      });
+
       Render.run(render);
       initButton(mouseConstraint, router, runner, render, setScore, init);
     };
@@ -217,6 +236,10 @@ export default function Page({ params }: { params: { id: string } }) {
       Render?.stop(render);
     };
   }, [router]);
+
+  useEffect(() => {
+    console.log(targetLeftCount);
+  }, [targetLeftCount]);
 
   return (
     <div className="relative h-[600px] w-[1080px]">

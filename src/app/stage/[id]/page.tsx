@@ -196,11 +196,21 @@ export default function Page({ params }: { params: { id: string } }) {
     return () => {
       World.clear(engine.world, false);
       Engine.clear(engine);
+      // 아직 typescript 지원이 완벽하지 않은듯
       Events.off(engine, undefined as any, undefined as any);
       Runner?.stop(runner);
       Render?.stop(render);
     };
   }, [router]);
 
-  return <canvas ref={canvasRef} />;
+  return (
+    <div className="relative h-[600px] w-[1080px]">
+      <div className="absolute top-6 right-6 w-48 h-12 rounded-md bg-slate-100/60 flex flex-col justify-center">
+        <div className="text-center text-lg font-bold text-slate-800">
+          사용한 콩 개수: <span id="count">0</span>
+        </div>
+      </div>
+      <canvas ref={canvasRef} />
+    </div>
+  );
 }

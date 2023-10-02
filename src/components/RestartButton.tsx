@@ -10,7 +10,7 @@ export default function RestartButton({ onClick }: { onClick: () => void }) {
         alt="restart"
         width={50}
         height={50}
-        unoptimized={true}
+        quality={100}
       />
     </button>
   );

@@ -10,7 +10,7 @@ export default function StartButton({ onClick }: { onClick: () => void }) {
         alt="start"
         width={50}
         height={50}
-        unoptimized={true}
+        quality={100}
       />
     </button>
   );

@@ -10,7 +10,7 @@ export default function PauseButton({ onClick }: { onClick: () => void }) {
         alt="pause"
         width={50}
         height={50}
-        unoptimized={true}
+        quality={100}
       />
     </button>
   );

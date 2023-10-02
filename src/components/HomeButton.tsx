@@ -11,7 +11,7 @@ export default function HomeButton() {
         alt="home"
         width={50}
         height={50}
-        unoptimized={true}
+        quality={100}
       />
     </Link>
   );

@@ -28,17 +28,24 @@ import Stone from '@/objects/Stone';
 import Block from '@/objects/Block';
 import Target from '@/objects/Target';
 import engine from '@/lib/engine';
-import { initButton } from '@/lib/handleButton';
 import { useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
 import { highScoreState } from '@/atoms/atom';
+import LevelComplete from '@/components/LevelComplete';
+import HomeButton from '@/components/HomeButton';
+import PauseButton from '@/components/PauseButton';
+import StartButton from '@/components/StartButton';
+import RestartButton from '@/components/RestartButton';
 
 export default function Page({ params }: { params: { id: string } }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [HighScore, setHighScore] = useRecoilState(highScoreState);
+  const [highScore, setHighScore] = useRecoilState(highScoreState);
   const [score, setScore] = useState(0);
   const [targetLeftCount, setTargetLeftCount] = useState(1);
+  const [isLevelComplete, setIsLevelComplete] = useState(false);
+  const [restart, setRestart] = useState<() => {}>(() => () => {});
+  const [isPaused, setIsPaused] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -227,10 +234,22 @@ export default function Page({ params }: { params: { id: string } }) {
       });
 
       Render.run(render);
-      initButton(mouseConstraint, router, runner, render, setScore, init);
     };
 
     init();
+
+    setRestart(() => () => {
+      World.clear(engine.world, false);
+      Engine.clear(engine);
+      // 아직 typescript 지원이 완벽하지 않은듯
+      Events.off(engine, undefined as any, undefined as any);
+      Runner?.stop(runner);
+      Render?.stop(render);
+      setScore(0);
+      setTargetLeftCount(1);
+      setIsLevelComplete(false);
+      init();
+    });
 
     return () => {
       World.clear(engine.world, false);
@@ -239,21 +258,53 @@ export default function Page({ params }: { params: { id: string } }) {
       Events.off(engine, undefined as any, undefined as any);
       Runner?.stop(runner);
       Render?.stop(render);
+      setScore(0);
+      setTargetLeftCount(1);
+      setIsLevelComplete(false);
     };
   }, [router]);
 
   useEffect(() => {
-    console.log(targetLeftCount);
-  }, [targetLeftCount]);
+    if (targetLeftCount === 0) {
+      setHighScore((prev) => {
+        const ret = { ...prev };
+        if (!prev[params.id] || prev[params.id] > score) {
+          ret[params.id] = score;
+        }
+        return ret;
+      });
+      setIsLevelComplete(true);
+    }
+  }, [targetLeftCount, score, params.id, setHighScore]);
 
   return (
     <div className="relative h-[600px] w-[1080px]">
-      <div className="absolute top-6 right-6 w-48 h-12 rounded-md bg-slate-100/60 flex flex-col justify-center">
+      <div className="absolute top-6 right-6 w-56 h-11 rounded-md bg-slate-100/60 flex flex-col justify-center">
         <div className="text-center text-lg font-bold text-slate-800">
-          사용한 콩 개수: <span id="count">{score}</span>
+          사용한 밤톨 개수🌰: <span id="count">{score}개</span>
         </div>
       </div>
+      {!isLevelComplete &&
+        (isPaused ? (
+          <div className="absolute top-[30px] left-[30px] flex gap-[12px]">
+            <StartButton onClick={() => setIsPaused(false)} />
+            <RestartButton onClick={restart} />
+            <HomeButton />
+          </div>
+        ) : (
+          <div className="absolute top-[30px] left-[30px]">
+            <PauseButton onClick={() => setIsPaused(true)} />
+          </div>
+        ))}
+
       <canvas ref={canvasRef} />
+      {isLevelComplete && (
+        <LevelComplete
+          score={score}
+          highScore={highScore[params.id]}
+          restart={restart}
+        />
+      )}
     </div>
   );
 }

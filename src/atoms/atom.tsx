@@ -1,7 +1,7 @@
 import { atom } from 'recoil';
 
 export interface HighScore {
-  [id: number]: number;
+  [id: string]: number;
 }
 
 export const highScoreState = atom<HighScore>({

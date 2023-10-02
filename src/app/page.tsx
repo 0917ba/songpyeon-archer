@@ -9,7 +9,7 @@ export default function Page() {
       <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] z-50">
         <Link
           href="/stage"
-          className="bg-slate-100/50 rounded px-4 py-2 font-bold text-lg relative top-7"
+          className="bg-slate-100/50 rounded px-4 py-2 font-semibold text-lg relative top-7"
         >
           시작하기
         </Link>

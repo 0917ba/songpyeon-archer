@@ -36,6 +36,7 @@ import HomeButton from '@/components/HomeButton';
 import PauseButton from '@/components/PauseButton';
 import StartButton from '@/components/StartButton';
 import RestartButton from '@/components/RestartButton';
+import Stage, { BlockInfo, TargetInfo } from '@/objects/Stage';
 
 export default function Page({ params }: { params: { id: string } }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -51,6 +52,10 @@ export default function Page({ params }: { params: { id: string } }) {
   useEffect(() => {
     let runner: Runner;
     let render: Render;
+
+    const blocks: BlockInfo[] = [{ x: 500, y: 500 }];
+    const targets: TargetInfo[] = [{ x: 500, y: 400, color: 'pink' }];
+    const stage = new Stage('stage1', 'anonymous', blocks, targets);
 
     const init = () => {
       runner = Runner.run(engine);
@@ -77,12 +82,19 @@ export default function Page({ params }: { params: { id: string } }) {
       World.add(engine.world, mouseConstraint);
 
       const floor = Floor();
+      // stone은 여러 번 생성되므로 let으로 선언
       let stone = Stone();
       stone.isStatic = true;
+      World.add(engine.world, [floor, stone]);
 
-      const block = Block(500, 500);
-      const target = Target(500, 400, 'pink');
-      World.add(engine.world, [floor, stone, block, target]);
+      // stage 객체의 정보 반영
+      stage.blocks.forEach((block) => {
+        World.add(engine.world, Block(block.x, block.y));
+      });
+
+      stage.targets.forEach((target) => {
+        World.add(engine.world, Target(target.x, target.y, target.color));
+      });
 
       let constraint: Constraint;
       let isDragging = false;
@@ -236,22 +248,7 @@ export default function Page({ params }: { params: { id: string } }) {
       Render.run(render);
     };
 
-    init();
-
-    setRestart(() => () => {
-      World.clear(engine.world, false);
-      Engine.clear(engine);
-      // 아직 typescript 지원이 완벽하지 않은듯
-      Events.off(engine, undefined as any, undefined as any);
-      Runner?.stop(runner);
-      Render?.stop(render);
-      setScore(0);
-      setTargetLeftCount(1);
-      setIsLevelComplete(false);
-      init();
-    });
-
-    return () => {
+    const cleanup = () => {
       World.clear(engine.world, false);
       Engine.clear(engine);
       // 아직 typescript 지원이 완벽하지 않은듯
@@ -262,6 +259,16 @@ export default function Page({ params }: { params: { id: string } }) {
       setTargetLeftCount(1);
       setIsLevelComplete(false);
     };
+
+    init();
+
+    // 재시작 함수 설정 (onClick에 사용됨)
+    setRestart(() => () => {
+      cleanup();
+      init();
+    });
+
+    return () => cleanup();
   }, [router]);
 
   useEffect(() => {

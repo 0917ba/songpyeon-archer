@@ -1,22 +1,30 @@
-import { Body } from 'matter-js';
+export interface BlockInfo {
+  x: number;
+  y: number;
+}
 
-class Stage {
+export interface TargetInfo {
+  x: number;
+  y: number;
+  color: 'pink' | 'green' | 'white';
+}
+
+export default class Stage {
   name: string;
+  author: string;
   lifeCount: number = 3;
-  blocks: Body[] = [];
-  targets: Body[] = [];
+  blocks: BlockInfo[] = [];
+  targets: TargetInfo[] = [];
 
   constructor(
     name: string,
-    lifeCount: number,
-    blocks?: Body[],
-    targets?: Body[]
+    author: string,
+    blocks?: BlockInfo[],
+    targets?: TargetInfo[]
   ) {
     this.name = name;
-    this.lifeCount = lifeCount;
+    this.author = author;
     this.blocks = blocks || [];
     this.targets = targets || [];
   }
 }
-
-export default Stage;

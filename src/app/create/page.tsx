@@ -39,6 +39,7 @@ import StartButton from '@/components/StartButton';
 import RestartButton from '@/components/RestartButton';
 import Stage, { BlockInfo, TargetInfo } from '@/objects/Stage';
 import SaveButton from '@/components/SaveButton';
+import MapSave from '@/components/MapSave';
 
 interface Position {
   x: number;
@@ -50,6 +51,7 @@ export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [stage, setStage] = useState<Stage>(new Stage('', '', '', [], []));
+  const [ended, setEnded] = useState(false);
 
   const saveStage = () => {
     const newStage = new Stage(
@@ -84,6 +86,7 @@ export default function Page() {
       }
     });
     setStage(newStage);
+    setEnded(true);
   };
 
   useEffect(() => {
@@ -267,10 +270,6 @@ export default function Page() {
     return () => cleanup();
   }, []);
 
-  useEffect(() => {
-    console.log(stage);
-  }, [stage]);
-
   return (
     <div className="relative h-[600px] w-[1080px]">
       <div className="absolute top-[25px] left-[30px] flex gap-[12px]">
@@ -279,6 +278,8 @@ export default function Page() {
       <div className="absolute top-[25px] right-[30px]">
         <SaveButton onClick={saveStage} />
       </div>
+      {ended && <MapSave stage={stage} />}
+
       <canvas ref={canvasRef} />
     </div>
   );

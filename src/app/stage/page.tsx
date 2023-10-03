@@ -37,7 +37,6 @@ function StageCard({ stage, id }: { stage: Stage; id: string }) {
 }
 
 export default function Page() {
-  const [page, setPage] = useState(1);
   const [stages, setStages] = useState<StageData[]>([]);
 
   useEffect(() => {
@@ -51,7 +50,7 @@ export default function Page() {
 
   return (
     <div className="h-[600px] w-[1080px] relative">
-      <div className="absolute top-5 left-5">
+      <div className="absolute top-5 left-5 z-50">
         <HomeButton />
       </div>
       <div className="w-full h-full absolute py-16 px-56">

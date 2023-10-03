@@ -8,7 +8,6 @@ import {
 } from '@/atoms/atom';
 import HomeButton from '@/components/HomeButton';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useRecoilState } from 'recoil';
 
 interface SettingBarProps {
@@ -56,8 +55,6 @@ export default function Page() {
   );
   const [friction, setFriction] = useRecoilState(beanFrictionState);
   const [gravity, setGravity] = useRecoilState(gravityState);
-
-  const router = useRouter();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

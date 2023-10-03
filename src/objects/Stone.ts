@@ -6,15 +6,16 @@ import {
 } from '@/constants/slingshot';
 import generateEllipseVertices from '@/lib/generateEllipseVertices';
 
-export default function Stone() {
+export default function Stone(mass = 1, friction = 1, airResistance = 1) {
   const { x, y } = SLING_POINT_CENTER;
   const vertices = generateEllipseVertices(STONE_WIDTH, STONE_HEIGHT);
 
   return Bodies.fromVertices(x, y, vertices, {
     label: 'stone',
-    frictionAir: 0.001,
-    mass: 1,
-    inverseMass: 1,
+    frictionAir: 0.01 * airResistance,
+    friction: 0.1 * friction,
+    mass: mass,
+    inverseMass: 1 / mass,
 
     collisionFilter: {
       group: -1,

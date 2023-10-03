@@ -29,14 +29,20 @@ import Block from '@/objects/Block';
 import Target from '@/objects/Target';
 import engine from '@/lib/engine';
 import { useRouter } from 'next/navigation';
-import { useRecoilState } from 'recoil';
-import { highScoreState } from '@/atoms/atom';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+  beanAirResistanceState,
+  beanFrictionState,
+  beanWeightState,
+  gravityState,
+  highScoreState,
+} from '@/atoms/atom';
 import LevelComplete from '@/components/LevelComplete';
 import HomeButton from '@/components/HomeButton';
 import PauseButton from '@/components/PauseButton';
 import StartButton from '@/components/StartButton';
 import RestartButton from '@/components/RestartButton';
-import Stage, { BlockInfo, TargetInfo } from '@/objects/Stage';
+import Stage from '@/objects/Stage';
 
 export default function Page({ params }: { params: { id: string } }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -47,6 +53,12 @@ export default function Page({ params }: { params: { id: string } }) {
   const [isLevelComplete, setIsLevelComplete] = useState(false);
   const [restart, setRestart] = useState<() => {}>(() => () => {});
   const [isPaused, setIsPaused] = useState(false);
+
+  const gravity = useRecoilValue(gravityState);
+  const airResistance = useRecoilValue(beanAirResistanceState);
+  const friction = useRecoilValue(beanFrictionState);
+  const mass = useRecoilValue(beanWeightState);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -54,6 +66,7 @@ export default function Page({ params }: { params: { id: string } }) {
     let render: Render;
 
     const init = () => {
+      engine.gravity.y = gravity;
       runner = Runner.run(engine);
       render = Render.create({
         engine,
@@ -80,7 +93,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
       const floor = Floor();
       // stone은 여러 번 생성되므로 let으로 선언
-      let stone = Stone();
+      let stone = Stone(mass, friction, airResistance);
       stone.isStatic = true;
       World.add(engine.world, [floor, stone]);
 
@@ -206,7 +219,7 @@ export default function Page({ params }: { params: { id: string } }) {
           // 0.1초 후 새로운 콩 생성
           setTimeout(() => {
             // World.remove(engine.world, stone);
-            stone = Stone();
+            stone = Stone(mass, friction, airResistance);
             World.add(engine.world, stone);
             stone.isStatic = true;
           }, 100);
@@ -276,7 +289,7 @@ export default function Page({ params }: { params: { id: string } }) {
     });
 
     return () => cleanup();
-  }, [router]);
+  }, [router, params.id, gravity, airResistance, friction, mass]);
 
   useEffect(() => {
     if (targetLeftCount === 0) {

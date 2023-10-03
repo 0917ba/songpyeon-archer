@@ -12,6 +12,7 @@ import {
   Constraint,
   Vector,
   Engine,
+  Composite,
 } from 'matter-js';
 import {
   BAND_STROKE,
@@ -37,9 +38,53 @@ import PauseButton from '@/components/PauseButton';
 import StartButton from '@/components/StartButton';
 import RestartButton from '@/components/RestartButton';
 import Stage, { BlockInfo, TargetInfo } from '@/objects/Stage';
+import SaveButton from '@/components/SaveButton';
+
+interface Position {
+  x: number;
+  y: number;
+  color?: 'pink' | 'green' | 'white';
+}
 
 export default function Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [stage, setStage] = useState<Stage>(new Stage('', '', '', [], []));
+
+  const saveStage = () => {
+    const newStage = new Stage(
+      stage.name,
+      stage.password,
+      stage.author,
+      [],
+      []
+    );
+    Composite.allBodies(engine.world).forEach((body) => {
+      const marker = body.label.substring(0, 6);
+      if (marker !== 'create') return;
+
+      const position: Position = {
+        x: body.position.x,
+        y: body.position.y,
+      };
+      switch (body.label) {
+        case 'create_block':
+          newStage.blocks.push(position as BlockInfo);
+          break;
+
+        case 'create_pink':
+        case 'create_green':
+        case 'create_white':
+          position.color = body.label.substring(7) as
+            | 'pink'
+            | 'green'
+            | 'white';
+          newStage.targets.push(position as TargetInfo);
+          break;
+      }
+    });
+    setStage(newStage);
+  };
 
   useEffect(() => {
     let runner: Runner;
@@ -76,13 +121,10 @@ export default function Page() {
       World.add(engine.world, floor);
 
       // 쓰레기통 추가
-      const bin = Bodies.rectangle(950, 56, 80, 80, {
+      const bin = Bodies.rectangle(910, 56, 80, 80, {
         isStatic: true,
         isSensor: true,
         label: 'bin',
-        // collisionFilter: {
-        //   group: -2,
-        // },
         render: {
           sprite: {
             texture: '/images/trash.png',
@@ -96,8 +138,7 @@ export default function Page() {
       const makeBlock = () => {
         const block = Block(690, 55);
         block.isStatic = true;
-        block.collisionFilter.group = -2;
-        block.label = 'create_block';
+        block.label = 'origin_block';
         return block;
       };
 
@@ -120,8 +161,7 @@ export default function Page() {
         }
 
         target.isStatic = true;
-        target.collisionFilter.group = -2;
-        target.label = `create_${color}`;
+        target.label = `origin_${color}`;
         return target;
       };
 
@@ -134,26 +174,44 @@ export default function Page() {
 
       Events.on(mouseConstraint, 'startdrag', (event) => {
         const clickedObject: Body = event.body;
-        if (clickedObject?.label.substring(0, 6) === 'create') {
+        const marker = clickedObject?.label.substring(0, 6);
+
+        if (marker === 'create' || marker === 'origin') {
           clickedObject.isStatic = false;
 
           setTimeout(() => {
             switch (clickedObject.label) {
-              case 'create_block':
+              case 'origin_block':
                 block = makeBlock();
                 World.add(engine.world, block);
+                clickedObject.label = clickedObject.label.replace(
+                  'origin',
+                  'create'
+                );
                 break;
-              case 'create_pink':
+              case 'origin_pink':
                 targetPink = makeTarget('pink');
                 World.add(engine.world, targetPink);
+                clickedObject.label = clickedObject.label.replace(
+                  'origin',
+                  'create'
+                );
                 break;
-              case 'create_green':
+              case 'origin_green':
                 targetGreen = makeTarget('green');
                 World.add(engine.world, targetGreen);
+                clickedObject.label = clickedObject.label.replace(
+                  'origin',
+                  'create'
+                );
                 break;
-              case 'create_white':
+              case 'origin_white':
                 targetWhite = makeTarget('white');
                 World.add(engine.world, targetWhite);
+                clickedObject.label = clickedObject.label.replace(
+                  'origin',
+                  'create'
+                );
                 break;
               default:
                 break;
@@ -164,7 +222,8 @@ export default function Page() {
 
       Events.on(mouseConstraint, 'enddrag', (event) => {
         const clickedObject: Body = event.body;
-        if (clickedObject?.label.substring(0, 6) === 'create') {
+        const marker = clickedObject?.label.substring(0, 6);
+        if (marker === 'create' || marker === 'origin') {
           event.body.isStatic = true;
         }
       });
@@ -172,15 +231,16 @@ export default function Page() {
       Events.on(engine, 'collisionStart', (event) => {
         event.pairs.some((pair) => {
           const { bodyA, bodyB } = pair;
+          const markerA = bodyA?.label.substring(0, 6);
+          const markerB = bodyB?.label.substring(0, 6);
           // 쓰레기통에 들어갔는지 확인
           const isTargetTrashed =
-            (bodyA?.label.substring(0, 6) === 'create' &&
-              bodyB.label === 'bin') ||
-            (bodyA.label === 'bin' && bodyB.label.substring(0, 6) === 'create');
+            (markerA === 'create' && markerB === 'bin') ||
+            (markerA === 'bin' && markerB === 'create');
 
           if (isTargetTrashed) {
             setTimeout(() => {
-              if (bodyA.label.substring(0, 6) === 'create') {
+              if (markerA === 'create') {
                 World.remove(engine.world, bodyA);
               } else {
                 World.remove(engine.world, bodyB);
@@ -193,8 +253,6 @@ export default function Page() {
       Render.run(render);
     };
 
-    init();
-
     const cleanup = () => {
       World.clear(engine.world, false);
       Engine.clear(engine);
@@ -204,11 +262,23 @@ export default function Page() {
       Render?.stop(render);
     };
 
+    init();
+
     return () => cleanup();
   }, []);
 
+  useEffect(() => {
+    console.log(stage);
+  }, [stage]);
+
   return (
     <div className="relative h-[600px] w-[1080px]">
+      <div className="absolute top-[25px] left-[30px] flex gap-[12px]">
+        <HomeButton />
+      </div>
+      <div className="absolute top-[25px] right-[30px]">
+        <SaveButton onClick={saveStage} />
+      </div>
       <canvas ref={canvasRef} />
     </div>
   );

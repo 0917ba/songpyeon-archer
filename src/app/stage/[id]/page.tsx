@@ -55,7 +55,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
     const blocks: BlockInfo[] = [{ x: 500, y: 500 }];
     const targets: TargetInfo[] = [{ x: 500, y: 400, color: 'pink' }];
-    const stage = new Stage('stage1', 'anonymous', blocks, targets);
+    const stage = new Stage('stage1', 'anonymous', 'password', blocks, targets);
 
     const init = () => {
       runner = Runner.run(engine);
@@ -69,6 +69,7 @@ export default function Page({ params }: { params: { id: string } }) {
           wireframes: false,
         },
       });
+
       // 마우스 이벤트 추가
       const mouse = Mouse.create(render.canvas);
       const mouseConstraint = MouseConstraint.create(engine, {

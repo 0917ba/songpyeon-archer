@@ -10,9 +10,4 @@ const noto_sans_kr = Noto_Sans_KR({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
 });
 
-const noto_serif_kr = Noto_Serif_KR({
-  subsets: ['latin'],
-  weight: ['200', '300', '400', '500', '600', '700', '900'],
-});
-
-export { hanalei_fill, noto_serif_kr, noto_sans_kr };
+export { hanalei_fill, noto_sans_kr };

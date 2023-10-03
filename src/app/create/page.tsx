@@ -66,6 +66,7 @@ export default function Page() {
           render: {
             visible: false,
           },
+          stiffness: 1,
         },
       });
       World.add(engine.world, mouseConstraint);
@@ -77,9 +78,11 @@ export default function Page() {
       // 쓰레기통 추가
       const bin = Bodies.rectangle(950, 56, 80, 80, {
         isStatic: true,
-        collisionFilter: {
-          group: -2,
-        },
+        isSensor: true,
+        label: 'bin',
+        // collisionFilter: {
+        //   group: -2,
+        // },
         render: {
           sprite: {
             texture: '/images/trash.png',
@@ -90,19 +93,102 @@ export default function Page() {
       });
       World.add(engine.world, bin);
 
-      const block = Block(690, 55);
-      const pinkTarget = Target(380, 55, 'pink');
-      const greenTarget = Target(580, 55, 'green');
-      const whiteTarget = Target(480, 55, 'white');
-      block.isStatic = true;
-      pinkTarget.isStatic = true;
-      greenTarget.isStatic = true;
-      whiteTarget.isStatic = true;
-      block.collisionFilter.group = -2;
-      pinkTarget.collisionFilter.group = -2;
-      greenTarget.collisionFilter.group = -2;
-      whiteTarget.collisionFilter.group = -2;
-      World.add(engine.world, [block, pinkTarget, greenTarget, whiteTarget]);
+      const makeBlock = () => {
+        const block = Block(690, 55);
+        block.isStatic = true;
+        block.collisionFilter.group = -2;
+        block.label = 'create_block';
+        return block;
+      };
+
+      const makeTarget = (color: 'pink' | 'green' | 'white') => {
+        let target: Body;
+
+        switch (color) {
+          case 'pink':
+            target = Target(380, 55, 'pink');
+            break;
+          case 'green':
+            target = Target(580, 55, 'green');
+            break;
+          case 'white':
+            target = Target(480, 55, 'white');
+            break;
+          default:
+            target = Target(380, 55, 'pink');
+            break;
+        }
+
+        target.isStatic = true;
+        target.collisionFilter.group = -2;
+        target.label = `create_${color}`;
+        return target;
+      };
+
+      let block = makeBlock();
+      let targetPink = makeTarget('pink');
+      let targetGreen = makeTarget('green');
+      let targetWhite = makeTarget('white');
+
+      World.add(engine.world, [block, targetPink, targetGreen, targetWhite]);
+
+      Events.on(mouseConstraint, 'startdrag', (event) => {
+        const clickedObject: Body = event.body;
+        if (clickedObject?.label.substring(0, 6) === 'create') {
+          clickedObject.isStatic = false;
+
+          setTimeout(() => {
+            switch (clickedObject.label) {
+              case 'create_block':
+                block = makeBlock();
+                World.add(engine.world, block);
+                break;
+              case 'create_pink':
+                targetPink = makeTarget('pink');
+                World.add(engine.world, targetPink);
+                break;
+              case 'create_green':
+                targetGreen = makeTarget('green');
+                World.add(engine.world, targetGreen);
+                break;
+              case 'create_white':
+                targetWhite = makeTarget('white');
+                World.add(engine.world, targetWhite);
+                break;
+              default:
+                break;
+            }
+          }, 100);
+        }
+      });
+
+      Events.on(mouseConstraint, 'enddrag', (event) => {
+        const clickedObject: Body = event.body;
+        if (clickedObject?.label.substring(0, 6) === 'create') {
+          event.body.isStatic = true;
+        }
+      });
+
+      Events.on(engine, 'collisionStart', (event) => {
+        event.pairs.some((pair) => {
+          const { bodyA, bodyB } = pair;
+          // 쓰레기통에 들어갔는지 확인
+          const isTargetTrashed =
+            (bodyA?.label.substring(0, 6) === 'create' &&
+              bodyB.label === 'bin') ||
+            (bodyA.label === 'bin' && bodyB.label.substring(0, 6) === 'create');
+
+          if (isTargetTrashed) {
+            setTimeout(() => {
+              if (bodyA.label.substring(0, 6) === 'create') {
+                World.remove(engine.world, bodyA);
+              } else {
+                World.remove(engine.world, bodyB);
+              }
+            }, 100);
+          }
+        });
+      });
 
       Render.run(render);
     };

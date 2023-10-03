@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Stage from '@/objects/Stage';
 import Link from 'next/link';
+import HomeButton from '@/components/HomeButton';
 
 interface StageData {
   stage: Stage;
@@ -50,6 +51,9 @@ export default function Page() {
 
   return (
     <div className="h-[600px] w-[1080px] relative">
+      <div className="absolute top-5 left-5">
+        <HomeButton />
+      </div>
       <div className="w-full h-full absolute py-16 px-56">
         <h1 className="text-4xl font-bold mb-10 text-center">
           스테이지를 선택하세요.

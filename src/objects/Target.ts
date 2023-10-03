@@ -9,6 +9,8 @@ export default function Target(x: number, y: number, color: Color) {
 
   return Bodies.fromVertices(x, y, vertices, {
     label: 'target',
+    mass: 0.9,
+    inverseMass: 1 / 0.9,
     render: {
       sprite: {
         texture: `/images/target_${color}.png`,

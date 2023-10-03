@@ -26,5 +26,9 @@ export default async function handler(
     const db = (await connectDB).db('songpyeon-archer');
     await db.collection('stages').insertOne(data);
     return res.status(201).json({ message: 'Stage created' });
+  } else if (req.method === 'DELETE') {
+    const db = (await connectDB).db('songpyeon-archer');
+    await db.collection('stages').deleteOne({ _id: id });
+    return res.status(200).json({ message: 'Stage deleted' });
   }
 }

@@ -43,6 +43,7 @@ import PauseButton from '@/components/PauseButton';
 import StartButton from '@/components/StartButton';
 import RestartButton from '@/components/RestartButton';
 import Stage from '@/objects/Stage';
+import MenuButton from '@/components/MenuButton';
 
 export default function Page({ params }: { params: { id: string } }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -316,7 +317,7 @@ export default function Page({ params }: { params: { id: string } }) {
           <div className="absolute top-[25px] left-[30px] flex gap-[12px]">
             <StartButton onClick={() => setIsPaused(false)} />
             <RestartButton onClick={restart} />
-            <HomeButton />
+            <MenuButton />
           </div>
         ) : (
           <div className="absolute top-[30px] left-[30px]">

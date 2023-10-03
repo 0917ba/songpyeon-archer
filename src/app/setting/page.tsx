@@ -6,7 +6,7 @@ import {
   beanWeightState,
   gravityState,
 } from '@/atoms/atom';
-import HomeButton from '@/components/HomeButton';
+import MenuButton from '@/components/MenuButton';
 import Image from 'next/image';
 import { useRecoilState } from 'recoil';
 
@@ -85,7 +85,7 @@ export default function Page() {
   return (
     <div className="h-[600px] w-[1080px] bg-slate-300 relative">
       <div className="absolute top-5 left-5 z-50">
-        <HomeButton />
+        <MenuButton />
       </div>
       <div className="absolute w-full h-full py-16 px-56">
         <h1 className="text-4xl font-bold mb-10 text-center">⚙️설정⚙️</h1>

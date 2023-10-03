@@ -33,6 +33,7 @@ import HomeButton from '@/components/HomeButton';
 import Stage, { BlockInfo, TargetInfo } from '@/objects/Stage';
 import SaveButton from '@/components/SaveButton';
 import MapSave from '@/components/MapSave';
+import MenuButton from '@/components/MenuButton';
 
 interface Position {
   x: number;
@@ -266,7 +267,7 @@ export default function Page() {
   return (
     <div className="relative h-[600px] w-[1080px]">
       <div className="absolute top-[25px] left-[30px] flex gap-[12px]">
-        <HomeButton />
+        <MenuButton />
       </div>
       <div className="absolute top-[25px] right-[30px]">
         <SaveButton onClick={saveStage} />

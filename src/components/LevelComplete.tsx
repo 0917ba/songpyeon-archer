@@ -3,6 +3,7 @@
 import { hanalei_fill } from '@/fonts';
 import RestartButton from './RestartButton';
 import HomeButton from './HomeButton';
+import MenuButton from './MenuButton';
 
 interface Props {
   score: number;
@@ -23,7 +24,7 @@ export default function LevelComplete({ score, highScore, restart }: Props) {
         </div>
         <div className="flex gap-3 justify-center">
           <RestartButton onClick={restart} />
-          <HomeButton />
+          <MenuButton />
         </div>
       </div>
     </div>

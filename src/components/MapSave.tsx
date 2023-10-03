@@ -36,6 +36,19 @@ export default function MapSave({ stage }: Props) {
     stage.author = author;
     stage.password = password;
 
+    if (!stage.name) {
+      alert('맵 이름을 입력해주세요.');
+      return;
+    }
+    if (!stage.author) {
+      alert('제작자를 입력해주세요.');
+      return;
+    }
+    if (!stage.password || stage.password.length < 4) {
+      alert('비밀번호를 입력해주세요. (4자리 이상)');
+      return;
+    }
+
     const id = uid();
     fetch(`/api/stage/${id}`, {
       method: 'POST',

@@ -43,13 +43,14 @@ export default function MapSave({ stage }: Props) {
         _id: id,
         stage,
       }),
+    }).then(() => {
+      alert('저장되었습니다.');
+      router.push('/stage');
     });
-    alert('저장되었습니다.');
-    router.push('/');
   };
 
   return (
-    <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] bg-slate-100/30 w-[512px] h-[320px] rounded-md ">
+    <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] bg-slate-100/50 w-[512px] h-[320px] rounded-md ">
       <div className="flex flex-col items-center pt-8 text-center px-16 gap-3">
         <h1 className=" font-bold text-xl">저장하시겠습니까?</h1>
         <div className="mb-3">

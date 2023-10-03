@@ -53,10 +53,6 @@ export default function Page({ params }: { params: { id: string } }) {
     let runner: Runner;
     let render: Render;
 
-    const blocks: BlockInfo[] = [{ x: 500, y: 500 }];
-    const targets: TargetInfo[] = [{ x: 500, y: 400, color: 'pink' }];
-    const stage = new Stage('stage1', 'anonymous', 'password', blocks, targets);
-
     const init = () => {
       runner = Runner.run(engine);
       render = Render.create({
@@ -88,14 +84,24 @@ export default function Page({ params }: { params: { id: string } }) {
       stone.isStatic = true;
       World.add(engine.world, [floor, stone]);
 
-      // stage 객체의 정보 반영
-      stage.blocks.forEach((block) => {
-        World.add(engine.world, Block(block.x, block.y));
-      });
+      (async () => {
+        const stageRes = await fetch(`/api/stage/${params.id}`);
+        const stageJson: any = await stageRes.json();
+        const stage: Stage = stageJson.stage;
 
-      stage.targets.forEach((target) => {
-        World.add(engine.world, Target(target.x, target.y, target.color));
-      });
+        if (!stage?.blocks && !stage?.targets) return;
+
+        setTargetLeftCount(stage.targets.length);
+
+        // stage 객체의 정보 반영
+        stage.blocks.forEach((block) => {
+          World.add(engine.world, Block(block.x, block.y));
+        });
+
+        stage.targets.forEach((target) => {
+          World.add(engine.world, Target(target.x, target.y, target.color));
+        });
+      })();
 
       let constraint: Constraint;
       let isDragging = false;

@@ -6,13 +6,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { stageId } = req.query;
+  // console.log(req.method, req.query);
+  const { id } = req.query;
 
   if (req.method === 'GET') {
     const db = (await connectDB).db('songpyeon-archer');
     const stage: Stage | null = await db
       .collection('stages')
-      .findOne({ _id: stageId });
+      .findOne({ _id: id });
 
     if (!stage) {
       return res.status(404).json({ message: 'Stage not found' });

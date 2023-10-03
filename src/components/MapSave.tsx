@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Stage from '@/objects/Stage';
 import uid from '@/lib/uid';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   stage: Stage;
@@ -12,6 +13,8 @@ export default function MapSave({ stage }: Props) {
   const [name, setName] = useState('');
   const [author, setAuthor] = useState('');
   const [password, setPassword] = useState('');
+
+  const router = useRouter();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,6 +44,8 @@ export default function MapSave({ stage }: Props) {
         stage,
       }),
     });
+    alert('저장되었습니다.');
+    router.push('/');
   };
 
   return (

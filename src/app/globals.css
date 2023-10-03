@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 스크롤바 설정*/
+.scrolls::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* 스크롤바 막대 설정*/
+.scrolls::-webkit-scrollbar-thumb {
+  background-color: rgb(241 245 249 / 0.5);
+  /* 스크롤바 둥글게 설정    */
+  border-radius: 8px;
+}
+
+/* 스크롤바 뒷 배경 설정*/
+.scrolls::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0);
+}

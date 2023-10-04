@@ -91,14 +91,14 @@ export default function Page() {
         <h1 className="text-4xl font-bold mb-10 text-center">⚙️설정⚙️</h1>
         <div className="flex flex-col gap-2 h-[280px] mb-10">
           <SettingBar
-            title="콩 무게 설정"
-            description="콩의 무게를 설정할 수 있습니다. (기본값: 1)"
+            title="돌멩이 무게 설정"
+            description="돌멩이의 무게를 설정할 수 있습니다. (기본값: 1)"
           >
             <SettingInput value={mass} onChange={onChange} name="mass" />
           </SettingBar>
           <SettingBar
-            title="콩 공기 저항 계수 설정"
-            description="콩의 공기 저항 계수를 설정할 수 있습니다. (기본값: 1)"
+            title="돌멩이 공기 저항 계수 설정"
+            description="돌멩이의 공기 저항 계수를 설정할 수 있습니다. (기본값: 1)"
           >
             <SettingInput
               value={airResistance}
@@ -107,8 +107,8 @@ export default function Page() {
             />
           </SettingBar>
           <SettingBar
-            title="콩 마찰 계수 설정"
-            description="콩의 마찰 계수를 설정할 수 있습니다. (기본값: 1)"
+            title="돌멩이 마찰 계수 설정"
+            description="돌멩이의 마찰 계수를 설정할 수 있습니다. (기본값: 1)"
           >
             <SettingInput
               value={friction}

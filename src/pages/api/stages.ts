@@ -8,7 +8,11 @@ export default async function handler(
 ) {
   if (req.method === 'GET') {
     const db = (await connectDB).db('songpyeon-archer');
-    const stage = await db.collection('stages').find().toArray();
+    const stage = await db
+      .collection('stages')
+      .find()
+      .sort({ date: -1 })
+      .toArray();
 
     if (!stage) {
       return res.status(404).json({ message: 'Stage not found' });

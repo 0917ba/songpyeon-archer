@@ -23,6 +23,7 @@ export default async function handler(
   } else if (req.method === 'POST') {
     let data = req.body;
     data = JSON.parse(data);
+    data.date = new Date();
     const db = (await connectDB).db('songpyeon-archer');
     await db.collection('stages').insertOne(data);
     return res.status(201).json({ message: 'Stage created' });

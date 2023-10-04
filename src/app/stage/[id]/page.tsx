@@ -334,9 +334,9 @@ export default function Page({ params }: { params: { id: string } }) {
 
   return (
     <div className="relative h-[600px] w-[1080px]">
-      <div className="absolute top-6 right-6 w-56 h-11 rounded-md bg-slate-100/60 flex flex-col justify-center">
+      <div className="absolute top-6 right-6 w-64 h-11 rounded-md bg-slate-100/60 flex flex-col justify-center">
         <div className="text-center text-lg font-semibold text-slate-800">
-          사용한 밤톨 개수🌰: <span id="count">{score}개</span>
+          사용한 돌멩이 개수🪨: <span id="count">{score}개</span>
         </div>
       </div>
       {!isLevelComplete &&

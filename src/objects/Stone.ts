@@ -14,8 +14,8 @@ export default function Stone(mass = 1, friction = 1, airResistance = 1) {
     label: 'stone',
     frictionAir: 0.01 * airResistance,
     friction: 0.1 * friction,
-    mass: mass,
-    inverseMass: 1 / mass,
+    mass: mass * 2,
+    inverseMass: 1 / 2 / mass,
 
     collisionFilter: {
       group: -1,

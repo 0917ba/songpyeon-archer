@@ -199,6 +199,7 @@ export default function Page({ params }: { params: { id: string } }) {
         if (clickedObject?.label === 'stone') {
           isDragging = false;
           stone.isStatic = false;
+          stone.label = 'droppedStone';
           World.remove(engine.world, bandLeft);
           World.remove(engine.world, bandRight);
 
@@ -264,6 +265,32 @@ export default function Page({ params }: { params: { id: string } }) {
             }, 100);
           }
         });
+      });
+
+      // 블럭이나 타겟, 돌멩이 클릭시 무시
+      Events.on(mouseConstraint, 'mousedown', (event) => {
+        const clickedBody = event.source.body;
+        const label = clickedBody?.label;
+        if (
+          label === 'block' ||
+          label === 'target' ||
+          label === 'droppedStone'
+        ) {
+          event.source.constraint.bodyB = null;
+        }
+      });
+
+      // 블럭이나 타겟, 돌멩이 드래그시 무시
+      Events.on(mouseConstraint, 'startdrag', (event) => {
+        const clickedBody = event.source.body;
+        const label = clickedBody?.label;
+        if (
+          label === 'block' ||
+          clickedBody.label === 'target' ||
+          label === 'droppedStone'
+        ) {
+          event.source.constraint.bodyB = null;
+        }
       });
 
       Render.run(render);

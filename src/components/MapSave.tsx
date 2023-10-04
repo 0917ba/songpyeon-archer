@@ -7,9 +7,10 @@ import { useRouter } from 'next/navigation';
 
 interface Props {
   stage: Stage;
+  setEnded: () => void;
 }
 
-export default function MapSave({ stage }: Props) {
+export default function MapSave({ stage, setEnded }: Props) {
   const [name, setName] = useState('');
   const [author, setAuthor] = useState('');
   const [password, setPassword] = useState('');
@@ -99,10 +100,16 @@ export default function MapSave({ stage }: Props) {
             />
           </div>
         </div>
-        <div>
+        <div className="flex gap-1">
+          <button
+            onClick={setEnded}
+            className="flex justify-center items-center w-12 h-8 text-sm font-semibold bg-yellow-400 rounded"
+          >
+            취소
+          </button>
           <button
             onClick={onClick}
-            className="rounded font-medium w-12 h-8 bg-yellow-400"
+            className="rounded font-semibold w-12 h-8 bg-orange-400"
           >
             저장
           </button>

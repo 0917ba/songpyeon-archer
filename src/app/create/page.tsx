@@ -9,27 +9,14 @@ import {
   MouseConstraint,
   Body,
   Events,
-  Constraint,
-  Vector,
   Engine,
   Composite,
 } from 'matter-js';
-import {
-  BAND_STROKE,
-  BAND_COLOR,
-  BAND_RADIUS,
-  SLING_POINT_LEFT,
-  SLING_POINT_RIGHT,
-  SLING_POINT_CENTER,
-  MAX_STRETCH,
-} from '@/constants/slingshot';
 import { useEffect, useRef, useState } from 'react';
 import Floor from '@/objects/Floor';
-import Stone from '@/objects/Stone';
 import Block from '@/objects/Block';
 import Target from '@/objects/Target';
 import engine from '@/lib/engine';
-import HomeButton from '@/components/HomeButton';
 import Stage, { BlockInfo, TargetInfo } from '@/objects/Stage';
 import SaveButton from '@/components/SaveButton';
 import MapSave from '@/components/MapSave';
@@ -272,7 +259,7 @@ export default function Page() {
       <div className="absolute top-[25px] right-[30px]">
         <SaveButton onClick={saveStage} />
       </div>
-      {ended && <MapSave stage={stage} />}
+      {ended && <MapSave stage={stage} setEnded={() => setEnded(false)} />}
 
       <canvas ref={canvasRef} />
     </div>
